@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>MEMO44 - Leonidas Name</title>
+    
+    <style>
+        :root {
+            --color-fondo-app: #F36C21;
+            --fuente-global: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --color-primario: #F36C21; 
+        }
+
+        body, html { 
+            margin: 0; padding: 0; height: 100dvh; width: 100%; 
+            overflow: hidden; font-family: var(--fuente-global); 
+            background-color: var(--color-fondo-app); 
+        }
+
+        .pantalla { 
+            width: 100%; height: 100dvh; display: flex; 
+            flex-direction: column; align-items: center; position: absolute;
+            background-color: var(--color-fondo-app); box-sizing: border-box;
+            background-size: contain; background-position: center; background-repeat: no-repeat;
+        }
+
+        #pantalla-carga { background-image: url('fondo.jpeg'); justify-content: flex-start; }
+        #pantalla-menu { background-image: url('fondo 2.jpeg'); }
+
+        .texto-carga-inferior {
+            font-size: 1.1rem; font-weight: bold; color: white;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            animation: blink 1.5s infinite;
+            position: absolute; top: 66.6%; transform: translateY(-50%);
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+        .cabecera-titulo {
+            width: 100%; background-color: var(--color-fondo-app);
+            padding: env(safe-area-inset-top, 10px) 0 10px 0; 
+            text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 10;
+        }
+
+        .texto-sombra {
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.9);
+            font-weight: 800; color: white; margin: 0; font-size: 1.8rem;
+        }
+
+        .stats-juego {
+            display: flex; justify-content: space-around; width: 95%;
+            color: white; font-weight: bold; margin: 5px 0; font-size: 0.9rem;
+            background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px;
+        }
+
+        .area-juego {
+            flex: 1; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; width: 100%; padding-bottom: 110px;
+        }
+
+        #tablero-memoria {
+            display: grid; grid-template-columns: repeat(4, 1fr); 
+            gap: 6px; width: 95%; max-width: 400px; perspective: 1000px;
+        }
+
+        .carta {
+            aspect-ratio: 1 / 1; position: relative;
+            transform-style: preserve-3d; transition: transform 0.5s; cursor: pointer;
+        }
+
+        .carta.volteada { transform: rotateY(180deg); }
+
+        .cara {
+            position: absolute; width: 100%; height: 100%;
+            backface-visibility: hidden; display: flex; align-items: center;
+            justify-content: center; border-radius: 10px; 
+            font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            box-sizing: border-box; overflow: hidden;
+        }
+
+        .reverso { background-color: white; color: var(--color-primario); border: 3px solid white; font-size: 2rem; }
+        
+        .frontal { 
+            background-color: white; color: var(--color-primario); 
+            transform: rotateY(180deg); border: 3px solid white;
+            text-align: center; padding: 0;
+        }
+
+        .frontal img {
+            width: 100%; height: 100%; object-fit: cover; display: block;
+        }
+
+        .texto-carta {
+            font-size: 1.1rem; padding: 5px; line-height: 1.2; word-wrap: break-word;
+        }
+
+        .enlace-web {
+            position: absolute; bottom: calc(75px + env(safe-area-inset-bottom)); 
+            color: white; text-decoration: none; font-weight: bold; font-size: 0.85rem;
+        }
+
+        .banner-politico {
+            position: absolute; bottom: 0; width: 100%; height: calc(70px + env(safe-area-inset-bottom)); 
+            background-image: url('banner.jpeg'); background-size: contain; 
+            background-position: center top; background-repeat: no-repeat;
+            background-color: #F37021; border-top: 2px solid white;
+        }
+
+        #mensaje-victoria {
+            display: none; position: fixed; top: 50%; left: 50%; 
+            transform: translate(-50%, -50%); background: white; 
+            border: 5px solid var(--color-primario); padding: 25px; 
+            border-radius: 20px; z-index: 2000; text-align: center; 
+            width: 85%; max-width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        button { 
+            width: 85%; max-width: 300px; padding: 14px; margin: 6px 0; 
+            background-color: var(--color-primario); color: white; 
+            font-size: 1.1rem; font-weight: 700; border: 2px solid white; 
+            border-radius: 12px; text-transform: uppercase;
+        }
+
+        #btn-compartir {
+            position: fixed; top: 15px; right: 15px; background: white; 
+            color: var(--color-primario); border-radius: 50%; width: 42px; height: 42px;
+            display: flex; align-items: center; justify-content: center; z-index: 1000;
+        }
+    </style>
+</head>
+<body onclick="iniciarMusica()">
+
+    <audio id="musicaFondo" loop><source src="Version 2 Final.mp3" type="audio/mpeg"></audio>
+    <div id="btn-compartir" onclick="compartirJuego()">🔗</div>
+
+    <div id="mensaje-victoria">
+        <h2>✨ ¡MEMORIA COMPLETADA! ✨</h2>
+        <p>Colombia gana con Leonidas Name</p>
+        <p id="tiempo-final" style="color: var(--color-primario); font-size: 1rem; margin: 10px 0;"></p>
+        <p id="record-mensaje" style="color: #28a745; margin-bottom: 15px; display: none;">¡NUEVO RÉCORD!</p>
+        <button onclick="jugarDeNuevoInmediato()">Jugar de nuevo</button>
+    </div>
+
+    <div id="pantalla-carga" class="pantalla">
+        <p class="texto-carga-inferior">CARGANDO EL RETO...</p>
+    </div>
+
+    <div id="pantalla-menu" class="pantalla" style="display: none;">
+        <div class="cabecera-titulo"><h1 class="texto-sombra">MEMO44</h1></div>
+        <div style="position: absolute; bottom: calc(115px + env(safe-area-inset-bottom)); width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <div style="color: white; margin-bottom: 15px; font-weight: bold; text-shadow: 1px 1px 4px rgba(0,0,0,0.5);">
+                Mejor Tiempo: <span id="mejor-tiempo-menu">--:--</span>
+            </div>
+            <button onclick="iniciarJuego()">Iniciar Juego</button>
+        </div>
+        <a href="https://www.leonidasnamegomez.com" target="_blank" class="enlace-web">www.leonidasnamegomez.com</a>
+        <div class="banner-politico"></div>
+    </div>
+
+    <div id="pantalla-juego" class="pantalla" style="display: none;">
+        <div class="cabecera-titulo"><h1 class="texto-sombra">MEMO44</h1></div>
+        
+        <div class="stats-juego">
+            <div>Tiempo: <span id="cronometro">00:00</span></div>
+            <div>Récord: <span id="mejor-tiempo-juego">--:--</span></div>
+        </div>
+
+        <div class="area-juego">
+            <div id="tablero-memoria"></div>
+            <div style="display:flex; gap:10px; width:90%; justify-content:center; margin-top: 20px;">
+                <button onclick="irAlMenu()" style="width:48%; font-size: 0.8rem; padding: 10px;">Menú</button>
+                <button onclick="reiniciarTablero(true)" style="width:48%; font-size: 0.8rem; padding: 10px;">Reiniciar</button>
+            </div>
+        </div>
+
+        <a href="https://www.leonidasnamegomez.com" target="_blank" class="enlace-web">www.leonidasnamegomez.com</a>
+        <div class="banner-politico"></div>
+    </div>
+
+    <script>
+        // Configuración de las 8 parejas (7 fotos y 1 texto)
+        const items = [
+            { tipo: 'imagen', valor: 'pareja1.jpg' },
+            { tipo: 'imagen', valor: 'pareja2.jpg' },
+            { tipo: 'imagen', valor: 'pareja3.jpg' },
+            { tipo: 'imagen', valor: 'pareja4.jpg' },
+            { tipo: 'imagen', valor: 'pareja5.jpg' },
+            { tipo: 'imagen', valor: 'pareja6.jpg' },
+            { tipo: 'imagen', valor: 'pareja7.jpg' },
+            { tipo: 'texto', valor: '8 de marzo' }
+        ];
+
+        let cartasData = [...items, ...items];
+        let cartasVolteadas = [];
+        let parejasEncontradas = 0;
+        let bloqueado = false;
+        let tiempoTranscurrido = 0;
+        let intervaloCronometro;
+        let musicaIniciada = false;
+
+        function iniciarMusica() { 
+            if (!musicaIniciada) { 
+                document.getElementById('musicaFondo').play().catch(() => {}); 
+                musicaIniciada = true; 
+            } 
+        }
+
+        window.onload = () => { cargarMejorTiempo(); };
+
+        function cargarMejorTiempo() {
+            const mejor = localStorage.getItem('mejorTiempoMemo44');
+            if (mejor) {
+                document.getElementById('mejor-tiempo-menu').innerText = formatearTiempo(mejor);
+                document.getElementById('mejor-tiempo-juego').innerText = formatearTiempo(mejor);
+            }
+        }
+
+        function formatearTiempo(segundos) {
+            const min = Math.floor(segundos / 60);
+            const seg = segundos % 60;
+            return `${min.toString().padStart(2, '0')}:${seg.toString().padStart(2, '0')}`;
+        }
+
+        function iniciarJuego() {
+            iniciarMusica();
+            document.getElementById('pantalla-menu').style.display = 'none';
+            document.getElementById('pantalla-juego').style.display = 'flex';
+            reiniciarTablero(false);
+        }
+
+        function jugarDeNuevoInmediato() {
+            document.getElementById('mensaje-victoria').style.display = 'none';
+            document.getElementById('record-mensaje').style.display = 'none';
+            cargarMejorTiempo();
+            reiniciarTablero(false);
+        }
+
+        function irAlMenu() {
+            clearInterval(intervaloCronometro);
+            document.getElementById('pantalla-juego').style.display = 'none';
+            document.getElementById('pantalla-menu').style.display = 'flex';
+            cargarMejorTiempo();
+        }
+
+        function reiniciarTablero(confirmar) {
+            if(confirmar && !confirm("¿Quieres reiniciar el tiempo y las cartas?")) return;
+            clearInterval(intervaloCronometro);
+            tiempoTranscurrido = 0;
+            parejasEncontradas = 0;
+            cartasVolteadas = [];
+            bloqueado = false;
+            document.getElementById('cronometro').innerText = "00:00";
+            
+            cartasData.sort(() => Math.random() - 0.5);
+            const tablero = document.getElementById('tablero-memoria');
+            tablero.innerHTML = '';
+
+            cartasData.forEach((item) => {
+                const carta = document.createElement('div');
+                carta.className = 'carta';
+                carta.dataset.valor = item.valor;
+                
+                let contenidoFrontal = '';
+                if (item.tipo === 'imagen') {
+                    contenidoFrontal = `<img src="${item.valor}" alt="pareja">`;
+                } else {
+                    contenidoFrontal = `<span class="texto-carta">${item.valor}</span>`;
+                }
+
+                carta.innerHTML = `
+                    <div class="cara reverso">?</div>
+                    <div class="cara frontal">${contenidoFrontal}</div>
+                `;
+                carta.onclick = () => voltearCarta(carta);
+                tablero.appendChild(carta);
+            });
+
+            intervaloCronometro = setInterval(() => {
+                tiempoTranscurrido++;
+                document.getElementById('cronometro').innerText = formatearTiempo(tiempoTranscurrido);
+            }, 1000);
+        }
+
+        function voltearCarta(carta) {
+            if (bloqueado || carta.classList.contains('volteada')) return;
+            carta.classList.add('volteada');
+            cartasVolteadas.push(carta);
+            if (cartasVolteadas.length === 2) {
+                bloqueado = true;
+                verificarPareja();
+            }
+        }
+
+        function verificarPareja() {
+            const [c1, c2] = cartasVolteadas;
+            if (c1.dataset.valor === c2.dataset.valor) {
+                parejasEncontradas++;
+                cartasVolteadas = [];
+                bloqueado = false;
+                if (parejasEncontradas === items.length) finalizarJuego();
+            } else {
+                setTimeout(() => {
+                    c1.classList.remove('volteada');
+                    c2.classList.remove('volteada');
+                    cartasVolteadas = [];
+                    bloqueado = false;
+                }, 800);
+            }
+        }
+
+        function finalizarJuego() {
+            clearInterval(intervaloCronometro);
+            const mejorActual = localStorage.getItem('mejorTiempoMemo44');
+            document.getElementById('tiempo-final').innerText = "Tu tiempo: " + formatearTiempo(tiempoTranscurrido);
+            if (!mejorActual || tiempoTranscurrido < parseInt(mejorActual)) {
+                localStorage.setItem('mejorTiempoMemo44', tiempoTranscurrido);
+                document.getElementById('record-mensaje').style.display = 'block';
+            }
+            setTimeout(() => { document.getElementById('mensaje-victoria').style.display = 'block'; }, 500);
+        }
+
+        function compartirJuego() {
+            const url = window.location.href;
+            if (navigator.share) navigator.share({ title: 'MEMO44', url: url });
+            else { navigator.clipboard.writeText(url); alert("¡Enlace copiado!"); }
+        }
+
+        setTimeout(() => {
+            document.getElementById('pantalla-carga').style.display = 'none';
+            document.getElementById('pantalla-menu').style.display = 'flex';
+        }, 3000);
+    </script>
+</body>
+</html>
