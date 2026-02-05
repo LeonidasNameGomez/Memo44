@@ -61,6 +61,11 @@
             font-weight: 800; color: white; margin: 0; font-size: 1.8rem;
         }
 
+        .reglas-sudo {
+            color: white; font-size: 0.85rem; font-weight: 600;
+            text-transform: uppercase; margin-top: 5px;
+        }
+
         .stats-juego {
             display: flex; justify-content: space-around; width: 95%;
             color: white; font-weight: bold; margin: 5px 0; font-size: 0.9rem;
@@ -93,24 +98,21 @@
         }
 
         .reverso { background-color: white; color: var(--color-primario); border: 3px solid white; font-size: 2rem; font-weight: bold; }
-        .frontal { background-color: white; transform: rotateY(180deg); border: 3px solid white; }
+        .frontal { 
+            background-color: white; transform: rotateY(180deg); border: 3px solid white;
+            padding: 5px; text-align: center; font-size: 0.8rem; font-weight: bold; color: var(--color-primario);
+        }
         .frontal img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* CONTENEDOR DE BOTONES (Solución al traslape) */
         .footer-controles {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            width: 100%; display: flex; flex-direction: column; align-items: center;
             padding-bottom: calc(75px + env(safe-area-inset-bottom));
             z-index: 20;
-            background: linear-gradient(transparent, var(--color-fondo-app) 20%);
         }
 
         .enlace-web {
             color: white; text-decoration: none; font-weight: bold; font-size: 0.85rem;
             margin-top: 10px; text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
-            position: relative;
         }
 
         .banner-politico {
@@ -118,8 +120,7 @@
             height: calc(68px + env(safe-area-inset-bottom)); 
             background-image: url('banner.jpeg'); background-size: contain; 
             background-position: center top; background-repeat: no-repeat;
-            background-color: #F37021; border-top: 1px solid white;
-            z-index: 10;
+            background-color: #F37021; border-top: 1px solid white; z-index: 10;
         }
 
         button { 
@@ -134,7 +135,7 @@
             transform: translate(-50%, -50%); background: white; 
             border: 5px solid var(--color-primario); padding: 25px; 
             border-radius: 20px; z-index: 3000; text-align: center; 
-            width: 85%; max-width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 85%; max-width: 320px;
         }
     </style>
 </head>
@@ -146,7 +147,6 @@
         <h2>✨ ¡MEMORIA COMPLETADA! ✨</h2>
         <p>Colombia gana con Leonidas Name</p>
         <p id="tiempo-final" style="color: var(--color-primario); font-weight: bold;"></p>
-        <p id="record-mensaje" style="color: #28a745; display: none;">¡NUEVO RÉCORD!</p>
         <button onclick="reiniciarTablero(false); document.getElementById('mensaje-victoria').style.display='none';">Jugar de nuevo</button>
     </div>
 
@@ -158,9 +158,7 @@
         <div class="cabecera-titulo"><h1 class="texto-sombra">MEMO44</h1></div>
         <div style="flex: 1;"></div>
         <div class="footer-controles">
-            <div style="color: white; margin-bottom: 10px; font-weight: bold;">
-                Mejor Tiempo: <span id="mejor-tiempo-menu">--:--</span>
-            </div>
+            <div style="color: white; margin-bottom: 10px; font-weight: bold;">Mejor Tiempo: <span id="mejor-tiempo-menu">--:--</span></div>
             <button onclick="iniciarJuego()">Iniciar Juego</button>
             <a href="https://www.leonidasnamegomez.com" target="_blank" class="enlace-web">www.leonidasnamegomez.com</a>
         </div>
@@ -168,16 +166,17 @@
     </div>
 
     <div id="pantalla-juego" class="pantalla" style="display: none;">
-        <div class="cabecera-titulo"><h1 class="texto-sombra">MEMO44</h1></div>
+        <div class="cabecera-titulo">
+            <h1 class="texto-sombra">MEMO44</h1>
+            <div class="reglas-sudo">Reglas: Encuentra las parejas</div>
+        </div>
         
         <div class="stats-juego">
             <div>Tiempo: <span id="cronometro">00:00</span></div>
             <div>Récord: <span id="mejor-tiempo-juego">--:--</span></div>
         </div>
 
-        <div class="area-juego">
-            <div id="tablero-memoria"></div>
-        </div>
+        <div class="area-juego"><div id="tablero-memoria"></div></div>
 
         <div class="footer-controles">
             <div style="display:flex; gap:8px; width:85%; justify-content:center;">
@@ -187,16 +186,19 @@
             <button onclick="compartirJuego()" style="width:85%; font-size: 0.85rem; padding: 10px;">COMPARTIR JUEGO</button>
             <a href="https://www.leonidasnamegomez.com" target="_blank" class="enlace-web">www.leonidasnamegomez.com</a>
         </div>
-
         <div class="banner-politico"></div>
     </div>
 
     <script>
         const items = [
-            { valor: 'pareja1.jpg' }, { valor: 'pareja2.jpg' },
-            { valor: 'pareja3.jpg' }, { valor: 'pareja4.jpg' },
-            { valor: 'pareja5.jpg' }, { valor: 'pareja6.jpg' },
-            { valor: 'pareja7.jpg' }, { valor: 'pareja8.jpg' }
+            { tipo: 'imagen', valor: 'pareja1.jpg' },
+            { tipo: 'imagen', valor: 'pareja2.jpg' },
+            { tipo: 'imagen', valor: 'pareja3.jpg' },
+            { tipo: 'imagen', valor: 'pareja4.jpg' },
+            { tipo: 'imagen', valor: 'pareja5.jpg' },
+            { tipo: 'imagen', valor: 'pareja6.jpg' },
+            { tipo: 'imagen', valor: 'pareja7.jpg' },
+            { tipo: 'texto', valor: '8 de marzo' }
         ];
 
         let cartasData = [...items, ...items];
@@ -219,9 +221,9 @@
         }
 
         function formatearTiempo(segundos) {
-            const min = Math.floor(segundos / 60);
-            const seg = segundos % 60;
-            return `${min.toString().padStart(2, '0')}:${seg.toString().padStart(2, '0')}`;
+            const min = Math.floor(segundos / 60).toString().padStart(2, '0');
+            const seg = (segundos % 60).toString().padStart(2, '0');
+            return `${min}:${seg}`;
         }
 
         function iniciarJuego() {
@@ -238,13 +240,11 @@
         }
 
         function reiniciarTablero(confirmar) {
-            if(confirmar && !confirm("¿Reiniciar el juego?")) return;
+            if(confirmar && !confirm("¿Reiniciar?")) return;
             clearInterval(intervaloCronometro);
-            tiempoTranscurrido = 0;
-            parejasEncontradas = 0;
-            cartasVolteadas = [];
-            bloqueado = false;
+            tiempoTranscurrido = 0; parejasEncontradas = 0; cartasVolteadas = []; bloqueado = false;
             document.getElementById('cronometro').innerText = "00:00";
+            
             cartasData.sort(() => Math.random() - 0.5);
             const tablero = document.getElementById('tablero-memoria');
             tablero.innerHTML = '';
@@ -253,8 +253,37 @@
                 const carta = document.createElement('div');
                 carta.className = 'carta';
                 carta.dataset.valor = item.valor;
-                carta.innerHTML = `<div class="cara reverso">?</div><div class="cara frontal"><img src="${item.valor}"></div>`;
-                carta.onclick = () => voltearCarta(carta);
+                
+                let contenido = item.tipo === 'imagen' ? 
+                    `<img src="${item.valor}">` : 
+                    `<span>${item.valor}</span>`;
+
+                carta.innerHTML = `<div class="cara reverso">?</div><div class="cara frontal">${contenido}</div>`;
+                carta.onclick = () => {
+                    if (bloqueado || carta.classList.contains('volteada')) return;
+                    carta.classList.add('volteada');
+                    cartasVolteadas.push(carta);
+                    if (cartasVolteadas.length === 2) {
+                        bloqueado = true;
+                        if (cartasVolteadas[0].dataset.valor === cartasVolteadas[1].dataset.valor) {
+                            parejasEncontradas++;
+                            cartasVolteadas = [];
+                            bloqueado = false;
+                            if (parejasEncontradas === items.length) {
+                                clearInterval(intervaloCronometro);
+                                localStorage.setItem('mejorTiempoMemo44', tiempoTranscurrido);
+                                document.getElementById('tiempo-final').innerText = "Tu tiempo: " + document.getElementById('cronometro').innerText;
+                                setTimeout(() => { document.getElementById('mensaje-victoria').style.display = 'block'; }, 500);
+                            }
+                        } else {
+                            setTimeout(() => {
+                                cartasVolteadas.forEach(c => c.classList.remove('volteada'));
+                                cartasVolteadas = [];
+                                bloqueado = false;
+                            }, 800);
+                        }
+                    }
+                };
                 tablero.appendChild(carta);
             });
 
@@ -262,41 +291,6 @@
                 tiempoTranscurrido++;
                 document.getElementById('cronometro').innerText = formatearTiempo(tiempoTranscurrido);
             }, 1000);
-        }
-
-        function voltearCarta(carta) {
-            if (bloqueado || carta.classList.contains('volteada')) return;
-            carta.classList.add('volteada');
-            cartasVolteadas.push(carta);
-            if (cartasVolteadas.length === 2) { bloqueado = true; verificarPareja(); }
-        }
-
-        function verificarPareja() {
-            const [c1, c2] = cartasVolteadas;
-            if (c1.dataset.valor === c2.dataset.valor) {
-                parejasEncontradas++;
-                cartasVolteadas = [];
-                bloqueado = false;
-                if (parejasEncontradas === items.length) finalizarJuego();
-            } else {
-                setTimeout(() => {
-                    c1.classList.remove('volteada');
-                    c2.classList.remove('volteada');
-                    cartasVolteadas = [];
-                    bloqueado = false;
-                }, 800);
-            }
-        }
-
-        function finalizarJuego() {
-            clearInterval(intervaloCronometro);
-            const mejorActual = localStorage.getItem('mejorTiempoMemo44');
-            document.getElementById('tiempo-final').innerText = "Tu tiempo: " + formatearTiempo(tiempoTranscurrido);
-            if (!mejorActual || tiempoTranscurrido < parseInt(mejorActual)) {
-                localStorage.setItem('mejorTiempoMemo44', tiempoTranscurrido);
-                document.getElementById('record-mensaje').style.display = 'block';
-            }
-            setTimeout(() => { document.getElementById('mensaje-victoria').style.display = 'block'; }, 500);
         }
 
         function compartirJuego() {
