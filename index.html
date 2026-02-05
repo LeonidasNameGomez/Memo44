@@ -6,10 +6,12 @@
     <title>MEMO44 - Leonidas Name</title>
     
     <meta property="og:title" content="MEMO44 - Juego de Memoria">
-    <meta property="og:description" content="¿Qué tan buena es tu memoria? Encuentra las parejas.">
+    <meta property="og:description" content="¿Qué tan buena es tu memoria? Encuentra las parejas y completa el reto.">
     <meta property="og:image" content="https://leonidasnamegomez.github.io/Memo44/miniatura.jpg">
     <meta property="og:url" content="https://leonidasnamegomez.github.io/Memo44/">
     <meta property="og:type" content="website">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="MEMO44 - Leonidas Name">
@@ -65,15 +67,9 @@
             background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px;
         }
 
-        .instrucciones-juego {
-            color: white; text-align: center; width: 90%;
-            margin: 8px 0; font-size: 0.85rem; line-height: 1.3;
-        }
-
         .area-juego {
             flex: 1; display: flex; flex-direction: column; align-items: center;
             justify-content: center; width: 100%; 
-            padding-bottom: 20px; /* Reducido para dar espacio a botones */
         }
 
         #tablero-memoria {
@@ -92,44 +88,38 @@
             position: absolute; width: 100%; height: 100%;
             backface-visibility: hidden; display: flex; align-items: center;
             justify-content: center; border-radius: 10px; 
-            font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
             box-sizing: border-box; overflow: hidden;
         }
 
-        .reverso { background-color: white; color: var(--color-primario); border: 3px solid white; font-size: 2rem; }
-        .frontal { background-color: white; transform: rotateY(180deg); border: 3px solid white; padding: 0; }
-        .frontal img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .texto-carta { font-size: 0.8rem; padding: 5px; line-height: 1.1; font-weight: 800; color: var(--color-primario); text-align: center; }
+        .reverso { background-color: white; color: var(--color-primario); border: 3px solid white; font-size: 2rem; font-weight: bold; }
+        .frontal { background-color: white; transform: rotateY(180deg); border: 3px solid white; }
+        .frontal img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Contenedor inferior para evitar traslapes */
+        /* CONTENEDOR DE BOTONES (Solución al traslape) */
         .footer-controles {
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-bottom: calc(75px + env(safe-area-inset-bottom)); /* Espacio para el banner */
-            z-index: 15;
+            padding-bottom: calc(75px + env(safe-area-inset-bottom));
+            z-index: 20;
+            background: linear-gradient(transparent, var(--color-fondo-app) 20%);
         }
 
         .enlace-web {
-            color: white; text-decoration: none; font-weight: bold; font-size: 0.8rem;
-            margin-top: 10px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            color: white; text-decoration: none; font-weight: bold; font-size: 0.85rem;
+            margin-top: 10px; text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+            position: relative;
         }
 
         .banner-politico {
-            position: absolute; bottom: 0; width: 100%; height: calc(68px + env(safe-area-inset-bottom)); 
+            position: absolute; bottom: 0; width: 100%; 
+            height: calc(68px + env(safe-area-inset-bottom)); 
             background-image: url('banner.jpeg'); background-size: contain; 
             background-position: center top; background-repeat: no-repeat;
             background-color: #F37021; border-top: 1px solid white;
-        }
-
-        #mensaje-victoria {
-            display: none; position: fixed; top: 50%; left: 50%; 
-            transform: translate(-50%, -50%); background: white; 
-            border: 5px solid var(--color-primario); padding: 25px; 
-            border-radius: 20px; z-index: 2000; text-align: center; 
-            width: 85%; max-width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 10;
         }
 
         button { 
@@ -137,9 +127,15 @@
             background-color: var(--color-primario); color: white; 
             font-size: 1rem; font-weight: 700; border: 2px solid white; 
             border-radius: 12px; text-transform: uppercase;
-            cursor: pointer;
         }
-        button:active { transform: scale(0.98); }
+
+        #mensaje-victoria {
+            display: none; position: fixed; top: 50%; left: 50%; 
+            transform: translate(-50%, -50%); background: white; 
+            border: 5px solid var(--color-primario); padding: 25px; 
+            border-radius: 20px; z-index: 3000; text-align: center; 
+            width: 85%; max-width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
     </style>
 </head>
 <body onclick="iniciarMusica()">
@@ -149,9 +145,9 @@
     <div id="mensaje-victoria">
         <h2>✨ ¡MEMORIA COMPLETADA! ✨</h2>
         <p>Colombia gana con Leonidas Name</p>
-        <p id="tiempo-final" style="color: var(--color-primario); font-size: 1rem; margin: 10px 0;"></p>
-        <p id="record-mensaje" style="color: #28a745; margin-bottom: 15px; display: none;">¡NUEVO RÉCORD!</p>
-        <button onclick="jugarDeNuevoInmediato()">Jugar de nuevo</button>
+        <p id="tiempo-final" style="color: var(--color-primario); font-weight: bold;"></p>
+        <p id="record-mensaje" style="color: #28a745; display: none;">¡NUEVO RÉCORD!</p>
+        <button onclick="reiniciarTablero(false); document.getElementById('mensaje-victoria').style.display='none';">Jugar de nuevo</button>
     </div>
 
     <div id="pantalla-carga" class="pantalla">
@@ -160,14 +156,13 @@
 
     <div id="pantalla-menu" class="pantalla" style="display: none;">
         <div class="cabecera-titulo"><h1 class="texto-sombra">MEMO44</h1></div>
-        <div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; width: 100%;">
-            <div class="footer-controles">
-                <div style="color: white; margin-bottom: 15px; font-weight: bold; text-shadow: 1px 1px 4px rgba(0,0,0,0.5);">
-                    Mejor Tiempo: <span id="mejor-tiempo-menu">--:--</span>
-                </div>
-                <button onclick="iniciarJuego()">Iniciar Juego</button>
-                <a href="https://www.leonidasnamegomez.com" target="_blank" class="enlace-web">www.leonidasnamegomez.com</a>
+        <div style="flex: 1;"></div>
+        <div class="footer-controles">
+            <div style="color: white; margin-bottom: 10px; font-weight: bold;">
+                Mejor Tiempo: <span id="mejor-tiempo-menu">--:--</span>
             </div>
+            <button onclick="iniciarJuego()">Iniciar Juego</button>
+            <a href="https://www.leonidasnamegomez.com" target="_blank" class="enlace-web">www.leonidasnamegomez.com</a>
         </div>
         <div class="banner-politico"></div>
     </div>
@@ -180,20 +175,16 @@
             <div>Récord: <span id="mejor-tiempo-juego">--:--</span></div>
         </div>
 
-        <div class="instrucciones-juego">
-            <strong>REGLAS:</strong> Forma parejas en el tablero.
-        </div>
-
         <div class="area-juego">
             <div id="tablero-memoria"></div>
         </div>
 
         <div class="footer-controles">
-            <div style="display:flex; gap:10px; width:85%; justify-content:center;">
-                <button onclick="irAlMenu()" style="width:48%; font-size: 0.85rem; padding: 10px;">Menú</button>
-                <button onclick="reiniciarTablero(true)" style="width:48%; font-size: 0.85rem; padding: 10px;">Reiniciar</button>
+            <div style="display:flex; gap:8px; width:85%; justify-content:center;">
+                <button onclick="irAlMenu()" style="width:48%; font-size: 0.8rem; padding: 10px;">Menú</button>
+                <button onclick="reiniciarTablero(true)" style="width:48%; font-size: 0.8rem; padding: 10px;">Reiniciar</button>
             </div>
-            <button onclick="compartirJuego()" style="width:85%; margin-top: 8px; font-size: 0.85rem; padding: 10px;">COMPARTIR JUEGO</button>
+            <button onclick="compartirJuego()" style="width:85%; font-size: 0.85rem; padding: 10px;">COMPARTIR JUEGO</button>
             <a href="https://www.leonidasnamegomez.com" target="_blank" class="enlace-web">www.leonidasnamegomez.com</a>
         </div>
 
@@ -201,16 +192,11 @@
     </div>
 
     <script>
-        // Se mantienen los items según tus archivos (pareja1.jpg, etc.)
         const items = [
-            { tipo: 'imagen', valor: 'pareja1.jpg' },
-            { tipo: 'imagen', valor: 'pareja2.jpg' },
-            { tipo: 'imagen', valor: 'pareja3.jpg' },
-            { tipo: 'imagen', valor: 'pareja4.jpg' },
-            { tipo: 'imagen', valor: 'pareja5.jpg' },
-            { tipo: 'imagen', valor: 'pareja6.jpg' },
-            { tipo: 'imagen', valor: 'pareja7.jpg' },
-            { tipo: 'texto', valor: '8 de MARZO' }
+            { valor: 'pareja1.jpg' }, { valor: 'pareja2.jpg' },
+            { valor: 'pareja3.jpg' }, { valor: 'pareja4.jpg' },
+            { valor: 'pareja5.jpg' }, { valor: 'pareja6.jpg' },
+            { valor: 'pareja7.jpg' }, { valor: 'pareja8.jpg' }
         ];
 
         let cartasData = [...items, ...items];
@@ -221,14 +207,7 @@
         let intervaloCronometro;
         let musicaIniciada = false;
 
-        function iniciarMusica() { 
-            const audio = document.getElementById('musicaFondo');
-            if (!musicaIniciada) { 
-                audio.play().catch(() => {}); 
-                musicaIniciada = true; 
-            } 
-        }
-
+        function iniciarMusica() { if (!musicaIniciada) { document.getElementById('musicaFondo').play().catch(() => {}); musicaIniciada = true; } }
         window.onload = () => { cargarMejorTiempo(); };
 
         function cargarMejorTiempo() {
@@ -246,16 +225,8 @@
         }
 
         function iniciarJuego() {
-            iniciarMusica();
             document.getElementById('pantalla-menu').style.display = 'none';
             document.getElementById('pantalla-juego').style.display = 'flex';
-            reiniciarTablero(false);
-        }
-
-        function jugarDeNuevoInmediato() {
-            document.getElementById('mensaje-victoria').style.display = 'none';
-            document.getElementById('record-mensaje').style.display = 'none';
-            cargarMejorTiempo();
             reiniciarTablero(false);
         }
 
@@ -267,7 +238,7 @@
         }
 
         function reiniciarTablero(confirmar) {
-            if(confirmar && !confirm("¿Quieres reiniciar el tiempo y las cartas?")) return;
+            if(confirmar && !confirm("¿Reiniciar el juego?")) return;
             clearInterval(intervaloCronometro);
             tiempoTranscurrido = 0;
             parejasEncontradas = 0;
@@ -282,8 +253,7 @@
                 const carta = document.createElement('div');
                 carta.className = 'carta';
                 carta.dataset.valor = item.valor;
-                let contenidoFrontal = item.tipo === 'imagen' ? `<img src="${item.valor}" alt="pareja">` : `<div class="texto-carta">${item.valor}</div>`;
-                carta.innerHTML = `<div class="cara reverso">?</div><div class="cara frontal">${contenidoFrontal}</div>`;
+                carta.innerHTML = `<div class="cara reverso">?</div><div class="cara frontal"><img src="${item.valor}"></div>`;
                 carta.onclick = () => voltearCarta(carta);
                 tablero.appendChild(carta);
             });
@@ -334,8 +304,7 @@
             if (navigator.share) {
                 navigator.share({ title: 'MEMO44', url: url }).catch(() => {});
             } else { 
-                navigator.clipboard.writeText(url); 
-                alert("¡Enlace copiado al portapapeles!"); 
+                navigator.clipboard.writeText(url); alert("¡Enlace copiado!"); 
             }
         }
 
