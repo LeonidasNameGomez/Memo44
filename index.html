@@ -14,7 +14,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="MEMO44 - Leonidas Name">
     <meta name="twitter:description" content="Encuentra las parejas en el menor tiempo posible.">
-    <meta name="twitter:image" content="https://LeonidasName.github.io/Memo44/miniatura.jpg">
+    <meta name="twitter:image" content="https://leonidasnamegomez.github.io/Memo44/miniatura.jpg">
     
     <style>
         :root {
@@ -99,7 +99,7 @@
         .reverso { background-color: white; color: var(--color-primario); border: 3px solid white; font-size: 2rem; }
         .frontal { background-color: white; transform: rotateY(180deg); border: 3px solid white; padding: 0; }
         .frontal img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .texto-carta { font-size: 0.9rem; padding: 5px; line-height: 1.1; word-wrap: break-word; font-weight: 800; color: var(--color-primario); }
+        .texto-carta { font-size: 0.8rem; padding: 5px; line-height: 1.1; font-weight: 800; color: var(--color-primario); text-align: center; }
 
         .enlace-web {
             position: absolute; bottom: calc(72px + env(safe-area-inset-bottom)); 
@@ -195,7 +195,7 @@
             { tipo: 'imagen', valor: 'pareja5.jpg' },
             { tipo: 'imagen', valor: 'pareja6.jpg' },
             { tipo: 'imagen', valor: 'pareja7.jpg' },
-            { tipo: 'texto', valor: '8 de marzo' }
+            { tipo: 'texto', valor: '8 de MARZO' }
         ];
 
         let cartasData = [...items, ...items];
@@ -260,7 +260,7 @@
                 const carta = document.createElement('div');
                 carta.className = 'carta';
                 carta.dataset.valor = item.valor;
-                let contenidoFrontal = item.tipo === 'imagen' ? `<img src="${item.valor}" alt="pareja">` : `<span class="texto-carta">${item.valor}</span>`;
+                let contenidoFrontal = item.tipo === 'imagen' ? `<img src="${item.valor}" alt="pareja">` : `<div class="texto-carta">${item.valor}</div>`;
                 carta.innerHTML = `<div class="cara reverso">?</div><div class="cara frontal">${contenidoFrontal}</div>`;
                 carta.onclick = () => voltearCarta(carta);
                 tablero.appendChild(carta);
