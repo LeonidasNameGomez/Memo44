@@ -5,19 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>MEMO44 - Leonidas Name</title>
     
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1634052474293396');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1634052474293396&ev=PageView&noscript=1"
+    /></noscript>
     <meta property="og:title" content="MEMO44 - Juego de Memoria">
     <meta property="og:description" content="¿Qué tan buena es tu memoria? Encuentra las parejas y completa el reto.">
     <meta property="og:image" content="https://leonidasnamegomez.github.io/Memo44/miniatura.jpg">
     <meta property="og:url" content="https://leonidasnamegomez.github.io/Memo44/">
     <meta property="og:type" content="website">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
 
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="MEMO44 - Leonidas Name">
-    <meta name="twitter:description" content="Encuentra las parejas en el menor tiempo posible.">
-    <meta name="twitter:image" content="https://leonidasnamegomez.github.io/Memo44/miniatura.jpg">
-    
     <style>
         :root {
             --color-fondo-app: #F36C21;
@@ -47,7 +55,6 @@
             animation: blink 1.5s infinite;
             position: absolute; top: 66.6%; transform: translateY(-50%);
         }
-
         @keyframes blink { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
 
         .cabecera-titulo {
@@ -61,14 +68,21 @@
             font-weight: 800; color: white; margin: 0; font-size: 1.8rem;
         }
 
-        .reglas-sudo {
-            color: white; font-size: 0.85rem; font-weight: 600;
-            text-transform: uppercase; margin-top: 5px;
+        /* MODAL DE REGLAS */
+        .modal-reglas {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 4000; align-items: center; justify-content: center;
         }
+        .contenido-modal {
+            background: white; width: 85%; max-width: 320px; padding: 25px;
+            border-radius: 20px; text-align: center; border: 4px solid var(--color-primario);
+        }
+        .contenido-modal h3 { color: var(--color-primario); margin-top: 0; }
+        .contenido-modal p { font-size: 0.95rem; line-height: 1.4; color: #333; margin-bottom: 20px; }
 
         .stats-juego {
-            display: flex; justify-content: space-around; width: 95%;
-            color: white; font-weight: bold; margin: 5px 0; font-size: 0.9rem;
+            display: flex; justify-content: space-around; width: 92%;
+            color: white; font-weight: bold; margin: 10px 0; font-size: 0.9rem;
             background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px;
         }
 
@@ -134,8 +148,8 @@
             display: none; position: fixed; top: 50%; left: 50%; 
             transform: translate(-50%, -50%); background: white; 
             border: 5px solid var(--color-primario); padding: 25px; 
-            border-radius: 20px; z-index: 3000; text-align: center; 
-            width: 85%; max-width: 320px;
+            border-radius: 20px; z-index: 5000; text-align: center; 
+            width: 85%; max-width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
     </style>
 </head>
@@ -143,10 +157,19 @@
 
     <audio id="musicaFondo" loop><source src="Version 2 Final.mp3" type="audio/mpeg"></audio>
 
+    <div id="modal-reglas" class="modal-reglas">
+        <div class="contenido-modal">
+            <h3>🧠 REGLAS DE MEMORIA</h3>
+            <p>1. Voltea las cartas para encontrar las parejas idénticas.<br><br>
+               2. ¡Hazlo en el menor tiempo posible para batir tu récord!</p>
+            <button onclick="cerrarReglas()" style="width: 100%;">¡EMPEZAR!</button>
+        </div>
+    </div>
+
     <div id="mensaje-victoria">
         <h2>✨ ¡MEMORIA COMPLETADA! ✨</h2>
         <p>Colombia gana con Leonidas Name</p>
-        <p id="tiempo-final" style="color: var(--color-primario); font-weight: bold;"></p>
+        <p id="tiempo-final" style="color: var(--color-primario); font-weight: bold; font-size: 1.2rem;"></p>
         <button onclick="reiniciarTablero(false); document.getElementById('mensaje-victoria').style.display='none';">Jugar de nuevo</button>
     </div>
 
@@ -159,17 +182,14 @@
         <div style="flex: 1;"></div>
         <div class="footer-controles">
             <div style="color: white; margin-bottom: 10px; font-weight: bold;">Mejor Tiempo: <span id="mejor-tiempo-menu">--:--</span></div>
-            <button onclick="iniciarJuego()">Iniciar Juego</button>
+            <button onclick="mostrarReglas()">Iniciar Juego</button>
             <a href="https://www.leonidasnamegomez.com" target="_blank" class="enlace-web">www.leonidasnamegomez.com</a>
         </div>
         <div class="banner-politico"></div>
     </div>
 
     <div id="pantalla-juego" class="pantalla" style="display: none;">
-        <div class="cabecera-titulo">
-            <h1 class="texto-sombra">MEMO44</h1>
-            <div class="reglas-sudo">Reglas: Encuentra las parejas</div>
-        </div>
+        <div class="cabecera-titulo"><h1 class="texto-sombra">MEMO44</h1></div>
         
         <div class="stats-juego">
             <div>Tiempo: <span id="cronometro">00:00</span></div>
@@ -212,6 +232,16 @@
         function iniciarMusica() { if (!musicaIniciada) { document.getElementById('musicaFondo').play().catch(() => {}); musicaIniciada = true; } }
         window.onload = () => { cargarMejorTiempo(); };
 
+        function mostrarReglas() {
+            document.getElementById('pantalla-menu').style.display = 'none';
+            document.getElementById('modal-reglas').style.display = 'flex';
+        }
+
+        function cerrarReglas() {
+            document.getElementById('modal-reglas').style.display = 'none';
+            iniciarJuego();
+        }
+
         function cargarMejorTiempo() {
             const mejor = localStorage.getItem('mejorTiempoMemo44');
             if (mejor) {
@@ -227,7 +257,6 @@
         }
 
         function iniciarJuego() {
-            document.getElementById('pantalla-menu').style.display = 'none';
             document.getElementById('pantalla-juego').style.display = 'flex';
             reiniciarTablero(false);
         }
@@ -240,7 +269,7 @@
         }
 
         function reiniciarTablero(confirmar) {
-            if(confirmar && !confirm("¿Reiniciar?")) return;
+            if(confirmar && !confirm("¿Reiniciar juego actual?")) return;
             clearInterval(intervaloCronometro);
             tiempoTranscurrido = 0; parejasEncontradas = 0; cartasVolteadas = []; bloqueado = false;
             document.getElementById('cronometro').innerText = "00:00";
@@ -256,7 +285,7 @@
                 
                 let contenido = item.tipo === 'imagen' ? 
                     `<img src="${item.valor}">` : 
-                    `<span>${item.valor}</span>`;
+                    `<div style="padding:5px; font-size:0.9rem; line-height:1.1;">${item.valor}</div>`;
 
                 carta.innerHTML = `<div class="cara reverso">?</div><div class="cara frontal">${contenido}</div>`;
                 carta.onclick = () => {
@@ -271,7 +300,10 @@
                             bloqueado = false;
                             if (parejasEncontradas === items.length) {
                                 clearInterval(intervaloCronometro);
-                                localStorage.setItem('mejorTiempoMemo44', tiempoTranscurrido);
+                                const recordActual = localStorage.getItem('mejorTiempoMemo44');
+                                if (!recordActual || tiempoTranscurrido < recordActual) {
+                                    localStorage.setItem('mejorTiempoMemo44', tiempoTranscurrido);
+                                }
                                 document.getElementById('tiempo-final').innerText = "Tu tiempo: " + document.getElementById('cronometro').innerText;
                                 setTimeout(() => { document.getElementById('mensaje-victoria').style.display = 'block'; }, 500);
                             }
@@ -294,9 +326,9 @@
         }
 
         function compartirJuego() {
-            const url = window.location.href;
+            const url = "https://leonidasnamegomez.github.io/Memo44/";
             if (navigator.share) {
-                navigator.share({ title: 'MEMO44', url: url }).catch(() => {});
+                navigator.share({ title: 'MEMO44', text: '¡Encuentra las parejas en Memo44!', url: url }).catch(() => {});
             } else { 
                 navigator.clipboard.writeText(url); alert("¡Enlace copiado!"); 
             }
